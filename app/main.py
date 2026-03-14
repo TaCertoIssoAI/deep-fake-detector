@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, UploadFile
 
-from app.detectors.registry import get_detector_for_media_type, load_all_detectors
+from app.detectors.registry import get_detectors_for_media_type, load_all_detectors
 from app.schemas import DetectResponse
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".tiff"}
@@ -58,8 +58,10 @@ async def detect(file: UploadFile):
         tmp_path = tmp.name
 
     try:
-        detector = get_detector_for_media_type(media_type)
-        results = detector.detect(tmp_path)
+        detectors = get_detectors_for_media_type(media_type)
+        results = []
+        for detector in detectors:
+            results.extend(detector.detect(tmp_path))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
