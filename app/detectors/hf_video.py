@@ -20,14 +20,15 @@ STD = [0.229, 0.224, 0.225]
 
 
 class _ResNextModel(nn.Module):
-    """ResNext50 model matching the actual checkpoint layer names."""
+    """ResNext50 + LSTM model matching the actual checkpoint layer names."""
 
-    def __init__(self, num_classes=2, latent_dim=2048):
+    def __init__(self, num_classes=2, latent_dim=2048, hidden_dim=2048):
         super().__init__()
         resnext = models.resnext50_32x4d(weights="DEFAULT")
         self.model = nn.Sequential(*list(resnext.children())[:-2])
         self.avgpool = nn.AdaptiveAvgPool2d(1)
-        self.linear1 = nn.Linear(latent_dim, num_classes)
+        self.lstm = nn.LSTM(latent_dim, hidden_dim, num_layers=1, bias=False)
+        self.linear1 = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x):
         batch_size, seq_length, c, h, w = x.shape
@@ -35,9 +36,9 @@ class _ResNextModel(nn.Module):
         features = self.model(x)
         pooled = self.avgpool(features)
         pooled = pooled.view(batch_size, seq_length, -1)
-        # Average across frames
-        pooled = pooled.mean(dim=1)
-        logits = self.linear1(pooled)
+        lstm_out, _ = self.lstm(pooled, None)
+        final = lstm_out[:, -1, :]
+        logits = self.linear1(final)
         return logits
 
 
