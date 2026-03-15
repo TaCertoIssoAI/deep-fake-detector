@@ -27,8 +27,10 @@ Every detector implements `BaseDetector` (load, detect, supported_media_types) a
 | **AASIST** | Audio (from video) | Graph Attention Network with SincConv frontend, raw waveform input, 297K params | [clovaai/aasist](https://github.com/clovaai/aasist) |
 | **VoiceGen** | Audio (from video) | Dual RawNet2 encoders with domain-agnostic feature disentanglement, SAM optimization, 59M params | [Purdue-M2/AI-Synthesized-Voice-Generalization](https://github.com/Purdue-M2/AI-Synthesized-Voice-Generalization) |
 | **UniversalFakeDetect** | Image + Video | Frozen CLIP ViT-L/14 + linear probe (769 params), 20-frame sampling for video, trained on ProGAN | [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
-| **GenD PE L** | Image + Video | Perception Encoder ViT-L (EVA, 300M params) + L2-normalized linear probe, 20-frame sampling for video | [yermandy/GenD_PE_L](https://huggingface.co/yermandy/GenD_PE_L) |
+| **GenD DINOv3 L** | Image + Video | DINOv3 ViT-L/16 (300M params) + L2-normalized linear probe, 20-frame sampling for video | [yermandy/GenD_DINOv3_L](https://huggingface.co/yermandy/GenD_DINOv3_L) |
 | **Wav2Vec2 Voice Detector** | Audio (from video) | Fine-tuned Wav2Vec2-XLSR (300M params), trained on 6 modern TTS engines | [garystafford/wav2vec2-deepfake-voice-detector](https://huggingface.co/garystafford/wav2vec2-deepfake-voice-detector) |
+
+> **Best performers so far:** **Frame Sampler** (prithivMLmods/Deep-Fake-Detector-v2-Model) for video and **VoiceGen** (Dual-RawNet2) for audio have shown the most reliable detection accuracy in our benchmarks.
 
 ## Quick Start
 
@@ -91,7 +93,7 @@ Environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HF_TOKEN` | — | HuggingFace token (for gated models) |
+| `HF_TOKEN` | — | HuggingFace token (required for GenD DINOv3 — accept license at [facebook/dinov3-vitl16-pretrain-lvd1689m](https://huggingface.co/facebook/dinov3-vitl16-pretrain-lvd1689m)) |
 | `DEVICE` | `cpu` | `cpu` or `cuda` |
 | `HOST` | `0.0.0.0` | Server bind address |
 | `PORT` | `8000` | Server port |
@@ -112,7 +114,7 @@ deep-fake-detection/
 │       ├── gend_clip.py      # GenD CLIP ViT-L/14 video detector
 │       ├── d3_clip.py        # D3 dual-branch CLIP video detector
 │       ├── universal_fake_detect.py  # UniversalFakeDetect CLIP linear probe
-│       ├── gend_dino.py        # GenD Perception Encoder ViT-L detector
+│       ├── gend_dino.py        # GenD DINOv3 ViT-L/16 detector
 │       ├── wav2vec_audio.py    # Wav2Vec2-XLSR audio deepfake detector
 │       ├── aasist/           # AASIST audio anti-spoofing detector
 │       └── voice_gen/        # VoiceGen dual-RawNet2 audio detector

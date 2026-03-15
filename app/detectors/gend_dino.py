@@ -2,34 +2,33 @@ import time
 
 import cv2
 import numpy as np
-import timm
-import timm.data
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from huggingface_hub import hf_hub_download
 from PIL import Image
 from safetensors.torch import load_file
+from transformers import AutoImageProcessor, AutoModel
 
 from app.detectors.base import BaseDetector
 from app.schemas import DetectionResult
 
 NUM_FRAMES = 20
-REPO_ID = "yermandy/GenD_PE_L"
-PE_MODEL = "vit_pe_core_large_patch14_336"
+REPO_ID = "yermandy/GenD_DINOv3_L"
+DINO_MODEL = "facebook/dinov3-vitl16-pretrain-lvd1689m"
 
 
-class _GenDPEModel(nn.Module):
-    """Perception Encoder ViT-L + L2-normalized linear probe for deepfake detection."""
+class _GenDDinoModel(nn.Module):
+    """DINOv3 ViT-L/16 + L2-normalized linear probe for deepfake detection."""
 
-    def __init__(self):
+    def __init__(self, backbone):
         super().__init__()
-        self.backbone = timm.create_model(PE_MODEL, pretrained=False, dynamic_img_size=True)
-        self.backbone.head = nn.Identity()
-        self.linear = nn.Linear(self.backbone.num_features, 2)  # 1024 -> 2
+        self.backbone = backbone
+        features_dim = backbone.config.hidden_size  # 1024
+        self.linear = nn.Linear(features_dim, 2)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        features = self.backbone(x)
+        features = self.backbone(x).last_hidden_state[:, 0]
         features = F.normalize(features, p=2, dim=1)
         return self.linear(features)
 
@@ -56,28 +55,26 @@ def _extract_frames(video_path: str, num_frames: int = NUM_FRAMES) -> list[Image
     return frames
 
 
-class GenDPEDetector(BaseDetector):
-    """GenD Perception Encoder ViT-L deepfake detector with frame sampling.
+class GenDDinoDetector(BaseDetector):
+    """GenD DINOv3 ViT-L/16 deepfake detector with frame sampling.
 
-    Apple Perception Encoder (EVA ViT-L, 300M params) + L2-normalized linear probe,
-    from the same GenD framework as our CLIP detector but with a different
-    vision backbone for feature diversity. (WACV 2026)
+    Meta DINOv3 self-supervised vision backbone (300M params) + L2-normalized
+    linear probe, from the same GenD framework as our CLIP detector but with a
+    different backbone for feature diversity. (WACV 2026)
+    Requires HF_TOKEN with accepted license for facebook/dinov3-vitl16-pretrain-lvd1689m.
     """
 
-    MODEL_NAME = "yermandy/GenD_PE_L"
+    MODEL_NAME = "yermandy/GenD_DINOv3_L"
 
     def __init__(self):
         self.model_name = self.MODEL_NAME
         self.model = None
-        self.transform = None
+        self.processor = None
 
     def load(self) -> None:
-        self.model = _GenDPEModel()
-
-        # Build preprocessing transform from timm model config
-        data_config = timm.data.resolve_model_data_config(self.model.backbone)
-        data_config["input_size"] = (3, 224, 224)
-        self.transform = timm.data.create_transform(**data_config, is_training=False)
+        self.processor = AutoImageProcessor.from_pretrained(DINO_MODEL)
+        backbone = AutoModel.from_pretrained(DINO_MODEL)
+        self.model = _GenDDinoModel(backbone)
 
         # Load GenD weights (backbone + linear head) from HuggingFace
         weights_path = hf_hub_download(REPO_ID, "model.safetensors")
@@ -96,7 +93,7 @@ class GenDPEDetector(BaseDetector):
 
     def _predict_frame(self, image: Image.Image) -> torch.Tensor:
         """Run inference on a single frame, returns softmax probabilities."""
-        inputs = self.transform(image).unsqueeze(0)
+        inputs = self.processor(images=image, return_tensors="pt")["pixel_values"]
         with torch.no_grad():
             logits = self.model(inputs)
             return torch.softmax(logits, dim=-1)
