@@ -1,0 +1,42 @@
+model,file,fake_score,real_score,prediction,actual,correct
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),fake-hf-1.mp4,0.0,0.0,fake,fake,True
+TRahulsingh/DeepfakeDetector,fake-hf-1.mp4,0.4271,0.5729,real,fake,False
+GenConViT (ED+VAE),fake-hf-1.mp4,0.3899,0.6101,real,fake,False
+yermandy/GenD_CLIP_L_14,fake-hf-1.mp4,0.6493,0.3507,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),fake-hf-2.mp4,0.0,0.0,fake,fake,True
+TRahulsingh/DeepfakeDetector,fake-hf-2.mp4,0.5951,0.4049,fake,fake,True
+GenConViT (ED+VAE),fake-hf-2.mp4,0.3745,0.6255,real,fake,False
+yermandy/GenD_CLIP_L_14,fake-hf-2.mp4,0.6442,0.3558,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),fake-hf-4.mov,0.0,0.0,fake,fake,True
+TRahulsingh/DeepfakeDetector,fake-hf-4.mov,0.9754,0.0246,fake,fake,True
+GenConViT (ED+VAE),fake-hf-4.mov,0.3295,0.6705,real,fake,False
+yermandy/GenD_CLIP_L_14,fake-hf-4.mov,0.743,0.257,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),fake-hf-5.mp4,0.0,0.0,fake,fake,True
+TRahulsingh/DeepfakeDetector,fake-hf-5.mp4,0.8911,0.1089,fake,fake,True
+GenConViT (ED+VAE),fake-hf-5.mp4,0.8355,0.1645,fake,fake,True
+yermandy/GenD_CLIP_L_14,fake-hf-5.mp4,0.386,0.614,real,fake,False
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),fake-our.mp4,0.0,0.0,fake,fake,True
+TRahulsingh/DeepfakeDetector,fake-our.mp4,0.7838,0.2162,fake,fake,True
+GenConViT (ED+VAE),fake-our.mp4,0.0664,0.9336,real,fake,False
+yermandy/GenD_CLIP_L_14,fake-our.mp4,0.5839,0.4161,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model,fake-our.png,0.0,0.0,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),real-hf-1.mp4,0.0,0.0,fake,real,False
+TRahulsingh/DeepfakeDetector,real-hf-1.mp4,0.3708,0.6292,real,real,True
+GenConViT (ED+VAE),real-hf-1.mp4,0.0634,0.9366,real,real,True
+yermandy/GenD_CLIP_L_14,real-hf-1.mp4,0.1543,0.8457,real,real,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),real-hf-2.mp4,0.0,0.0,fake,real,False
+TRahulsingh/DeepfakeDetector,real-hf-2.mp4,0.6089,0.3911,fake,real,False
+GenConViT (ED+VAE),real-hf-2.mp4,0.1283,0.8717,real,real,True
+yermandy/GenD_CLIP_L_14,real-hf-2.mp4,0.158,0.842,real,real,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),real-hf-3.mp4,0.0,0.0,fake,real,False
+TRahulsingh/DeepfakeDetector,real-hf-3.mp4,0.8562,0.1438,fake,real,False
+GenConViT (ED+VAE),real-hf-3.mp4,0.1353,0.8647,real,real,True
+yermandy/GenD_CLIP_L_14,real-hf-3.mp4,0.4208,0.5792,real,real,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),real-hf-4.mp4,0.0,0.0,fake,real,False
+TRahulsingh/DeepfakeDetector,real-hf-4.mp4,0.8434,0.1566,fake,real,False
+GenConViT (ED+VAE),real-hf-4.mp4,0.4146,0.5854,real,real,True
+yermandy/GenD_CLIP_L_14,real-hf-4.mp4,0.2537,0.7463,real,real,True
+prithivMLmods/Deep-Fake-Detector-v2-Model (frame-sampling),real-hf-5.MOV,0.0,0.0,fake,real,False
+TRahulsingh/DeepfakeDetector,real-hf-5.MOV,0.7855,0.2145,fake,real,False
+GenConViT (ED+VAE),real-hf-5.MOV,0.0001,0.9999,real,real,True
+yermandy/GenD_CLIP_L_14,real-hf-5.MOV,0.2058,0.7942,real,real,True

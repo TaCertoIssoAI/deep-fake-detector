@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, UploadFile
 
-from app.detectors.registry import get_detectors_for_media_type, load_all_detectors
+from app.detectors.registry import get_detectors_for_media_type, is_ready, load_all_detectors
 from app.schemas import DetectResponse
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".gif", ".tiff"}
@@ -39,6 +39,8 @@ app = FastAPI(title="Deep-Fake Detector", lifespan=lifespan)
 
 @app.get("/health")
 async def health():
+    if not is_ready():
+        return {"status": "loading"}
     return {"status": "ok"}
 
 

@@ -14,13 +14,13 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
 
 
-def wait_for_server(base_url: str, timeout: float = 120) -> bool:
+def wait_for_server(base_url: str, timeout: float = 300) -> bool:
     """Wait until the server is ready or timeout."""
     deadline = time.time() + timeout
     while time.time() < deadline:
         try:
             r = requests.get(f"{base_url}/health", timeout=2)
-            if r.status_code == 200:
+            if r.status_code == 200 and r.json().get("status") == "ok":
                 return True
         except requests.ConnectionError:
             pass
@@ -54,7 +54,7 @@ def main():
             ],
             cwd=os.path.dirname(os.path.abspath(__file__)),
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=sys.stderr,
         )
 
         if not wait_for_server(base_url):

@@ -1,28 +1,34 @@
 import logging
 
 from app.detectors.base import BaseDetector
+from app.detectors.efficientnet_video import EfficientNetVideoDetector
 from app.detectors.frame_sampler import FrameSamplerDetector
+from app.detectors.gend_clip import GenDClipDetector
+from app.detectors.genconvit.detector import GenConViTDetector
 from app.detectors.hf_image import HFImageDetector
-from app.detectors.hf_video import HFVideoDetector
 
 logger = logging.getLogger(__name__)
 
 DETECTOR_REGISTRY: dict[str, type[BaseDetector]] = {
     "hf_image": HFImageDetector,
-    "hf_video": HFVideoDetector,
     "frame_sampler": FrameSamplerDetector,
+    "efficientnet_video": EfficientNetVideoDetector,
+    "genconvit": GenConViTDetector,
+    "gend_clip": GenDClipDetector,
 }
 
 MEDIA_TYPE_TO_DETECTORS: dict[str, list[str]] = {
     "image": ["hf_image"],
-    "video": ["hf_video", "frame_sampler"],
+    "video": ["frame_sampler", "efficientnet_video", "genconvit", "gend_clip"],
 }
 
 _loaded_detectors: dict[str, BaseDetector] = {}
+_loading_complete = False
 
 
 def load_all_detectors() -> None:
     """Instantiate and load all registered detectors. Skips models that fail to load."""
+    global _loading_complete
     for name, cls in DETECTOR_REGISTRY.items():
         try:
             detector = cls()
@@ -31,6 +37,11 @@ def load_all_detectors() -> None:
             logger.info(f"Loaded detector: {name}")
         except Exception as e:
             logger.warning(f"Failed to load detector '{name}': {e}")
+    _loading_complete = True
+
+
+def is_ready() -> bool:
+    return _loading_complete
 
 
 def get_detectors_for_media_type(media_type: str) -> list[BaseDetector]:
