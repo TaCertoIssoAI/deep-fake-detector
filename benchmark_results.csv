@@ -8,7 +8,7 @@ VoiceGen (Dual-RawNet2),fake-hf-4.mov,0.546,0.454,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-5.mp4,0.4993,0.5007,real,fake,False
 VoiceGen (Dual-RawNet2),fake-hf-5.mp4,1.0,0.0,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-our.mp4,0.6046,0.3954,fake,fake,True
-VoiceGen (Dual-RawNet2),fake-our.mp4,1.0,0.0,fake,fake,True
+VoiceGen (Dual-RawNet2),fake-our.mp4,1.0,0.0,fake,fake,True 
 prithivMLmods/Deep-Fake-Detector-v2-Model,fake-our.png,0.8157,0.1843,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-2.mp4,0.8424,0.1576,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-ours-2.mp4,0.0052,0.9948,real,fake,False
