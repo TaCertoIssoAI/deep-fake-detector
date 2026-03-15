@@ -22,22 +22,14 @@ Every detector implements `BaseDetector` (load, detect, supported_media_types) a
 |-------|-------|-------------|--------|
 | **ViT Deep-Fake Detector v2** | Image | ViT-base (HuggingFace pipeline) | [prithivMLmods/Deep-Fake-Detector-v2-Model](https://huggingface.co/prithivMLmods/Deep-Fake-Detector-v2-Model) |
 | **Frame Sampler** | Video | Samples 20 video frames, runs ViT image detector on each, averages scores | Uses the image model above |
-| **GenD CLIP L/14** | Video | CLIP ViT-L/14 vision encoder + linear probe, 20-frame averaging | [yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14) |
-| **D3** | Video | Dual-branch CLIP ViT-L/14 (shuffled + original patches) + attention head, 20-frame averaging | [BigAandSmallq/D3](https://github.com/BigAandSmallq/D3) |
-| **AASIST** | Audio (from video) | Graph Attention Network with SincConv frontend, raw waveform input, 297K params | [clovaai/aasist](https://github.com/clovaai/aasist) |
 | **VoiceGen** | Audio (from video) | Dual RawNet2 encoders with domain-agnostic feature disentanglement, SAM optimization, 59M params | [Purdue-M2/AI-Synthesized-Voice-Generalization](https://github.com/Purdue-M2/AI-Synthesized-Voice-Generalization) |
-| **UniversalFakeDetect** | Image + Video | Frozen CLIP ViT-L/14 + linear probe (769 params), 20-frame sampling for video, trained on ProGAN | [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
-| **GenD DINOv3 L** | Image + Video | DINOv3 ViT-L/16 (300M params) + L2-normalized linear probe, 20-frame sampling for video | [yermandy/GenD_DINOv3_L](https://huggingface.co/yermandy/GenD_DINOv3_L) |
-| **Wav2Vec2 Voice Detector** | Audio (from video) | Fine-tuned Wav2Vec2-XLSR (300M params), trained on 6 modern TTS engines | [garystafford/wav2vec2-deepfake-voice-detector](https://huggingface.co/garystafford/wav2vec2-deepfake-voice-detector) |
-
-> **Best performers so far:** **Frame Sampler** (prithivMLmods/Deep-Fake-Detector-v2-Model) for video and **VoiceGen** (Dual-RawNet2) for audio have shown the most reliable detection accuracy in our benchmarks.
 
 ## Quick Start
 
 ### Requirements
 
 - Python 3.11+
-- ~3GB disk for model weights (downloaded on first run)
+- ~600MB disk for model weights (downloaded on first run)
 
 ### Setup
 
@@ -93,7 +85,7 @@ Environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `HF_TOKEN` | — | HuggingFace token (required for GenD DINOv3 — accept license at [facebook/dinov3-vitl16-pretrain-lvd1689m](https://huggingface.co/facebook/dinov3-vitl16-pretrain-lvd1689m)) |
+| `HF_TOKEN` | — | HuggingFace token (for gated models) |
 | `DEVICE` | `cpu` | `cpu` or `cuda` |
 | `HOST` | `0.0.0.0` | Server bind address |
 | `PORT` | `8000` | Server port |
@@ -111,12 +103,6 @@ deep-fake-detection/
 │       ├── registry.py       # Detector registry and media type routing
 │       ├── hf_image.py       # ViT image detector (HuggingFace)
 │       ├── frame_sampler.py  # Video → frame sampling → image detector
-│       ├── gend_clip.py      # GenD CLIP ViT-L/14 video detector
-│       ├── d3_clip.py        # D3 dual-branch CLIP video detector
-│       ├── universal_fake_detect.py  # UniversalFakeDetect CLIP linear probe
-│       ├── gend_dino.py        # GenD DINOv3 ViT-L/16 detector
-│       ├── wav2vec_audio.py    # Wav2Vec2-XLSR audio deepfake detector
-│       ├── aasist/           # AASIST audio anti-spoofing detector
 │       └── voice_gen/        # VoiceGen dual-RawNet2 audio detector
 ├── cli.py                    # CLI tool
 ├── benchmark.py              # Model evaluation script
@@ -148,6 +134,15 @@ Repository: https://github.com/truemediaorg/ml-models
 - Dataset: GenFace (515K forged + 100K real faces covering GANs and diffusion methods)
 - Repository: https://github.com/Jenine-321/GenFace
 - Skipped for now: redundant with existing ViT image detector, weak cross-dataset generalization
+
+### Previously Integrated (Removed — Underperformed)
+
+- **GenD CLIP L/14** (video) — CLIP ViT-L/14 + linear probe, 20-frame averaging. [yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14)
+- **D3** (video) — Dual-branch CLIP ViT-L/14 (shuffled + original patches) + attention head. [BigAandSmallq/D3](https://github.com/BigAandSmallq/D3)
+- **AASIST** (audio) — Graph Attention Network with SincConv, 297K params. [clovaai/aasist](https://github.com/clovaai/aasist)
+- **UniversalFakeDetect** (image + video) — Frozen CLIP ViT-L/14 + linear probe, 769 params. [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect)
+- **GenD DINOv3 L** (image + video) — DINOv3 ViT-L/16 + linear probe, 300M params. [yermandy/GenD_DINOv3_L](https://huggingface.co/yermandy/GenD_DINOv3_L)
+- **Wav2Vec2 Voice Detector** (audio) — Fine-tuned Wav2Vec2-XLSR, 300M params. [garystafford/wav2vec2-deepfake-voice-detector](https://huggingface.co/garystafford/wav2vec2-deepfake-voice-detector)
 
 ### Other Evaluated Models
 
