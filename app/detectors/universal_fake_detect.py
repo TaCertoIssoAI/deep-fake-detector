@@ -2,6 +2,8 @@ import os
 import time
 import urllib.request
 
+import cv2
+import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -16,6 +18,30 @@ FEATURE_DIM = 768
 WEIGHTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "models", "universal_fake_detect")
 WEIGHTS_PATH = os.path.join(WEIGHTS_DIR, "fc_weights.pth")
 WEIGHTS_URL = "https://github.com/WisconsinAIVision/UniversalFakeDetect/raw/main/pretrained_weights/fc_weights.pth"
+
+NUM_FRAMES = 20
+
+
+def _extract_frames(video_path: str, num_frames: int = NUM_FRAMES) -> list[Image.Image]:
+    cap = cv2.VideoCapture(video_path)
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if total <= 0:
+        cap.release()
+        return []
+
+    indexes = set(np.linspace(0, total - 1, num=num_frames, dtype=int))
+    frames = []
+
+    for i in range(total):
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if i in indexes:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frames.append(Image.fromarray(frame_rgb))
+
+    cap.release()
+    return frames
 
 
 class _UFDHead(nn.Module):
@@ -66,17 +92,29 @@ class UniversalFakeDetectDetector(BaseDetector):
         self.head.load_state_dict(mapped)
         self.head.eval()
 
-    def detect(self, file_path: str) -> list[DetectionResult]:
-        start = time.perf_counter()
-
-        image = Image.open(file_path).convert("RGB")
+    def _predict_image(self, image: Image.Image) -> float:
+        """Run inference on a single image, returns fake probability."""
         inputs = self.processor(images=image, return_tensors="pt")["pixel_values"]
-
         with torch.no_grad():
             vision_out = self.backbone.vision_model(inputs).pooler_output
             features = self.backbone.visual_projection(vision_out)
             logit = self.head(features)
-            prob = torch.sigmoid(logit).item()
+            return torch.sigmoid(logit).item()
+
+    def detect(self, file_path: str) -> list[DetectionResult]:
+        start = time.perf_counter()
+
+        frames = _extract_frames(file_path)
+        if frames:
+            # Video: sample frames and average
+            probs = [self._predict_image(frame) for frame in frames]
+            prob = sum(probs) / len(probs)
+            media_type = "video"
+        else:
+            # Image
+            image = Image.open(file_path).convert("RGB")
+            prob = self._predict_image(image)
+            media_type = "image"
 
         fake_score = round(prob, 4)
         real_score = round(1.0 - prob, 4)
@@ -87,17 +125,17 @@ class UniversalFakeDetectDetector(BaseDetector):
                 label="fake",
                 score=fake_score,
                 model_used=self.model_name,
-                media_type="image",
+                media_type=media_type,
                 processing_time_ms=round(elapsed_ms, 2),
             ),
             DetectionResult(
                 label="real",
                 score=real_score,
                 model_used=self.model_name,
-                media_type="image",
+                media_type=media_type,
                 processing_time_ms=round(elapsed_ms, 2),
             ),
         ]
 
     def supported_media_types(self) -> list[str]:
-        return ["image"]
+        return ["image", "video"]

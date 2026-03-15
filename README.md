@@ -26,14 +26,16 @@ Every detector implements `BaseDetector` (load, detect, supported_media_types) a
 | **D3** | Video | Dual-branch CLIP ViT-L/14 (shuffled + original patches) + attention head, 20-frame averaging | [BigAandSmallq/D3](https://github.com/BigAandSmallq/D3) |
 | **AASIST** | Audio (from video) | Graph Attention Network with SincConv frontend, raw waveform input, 297K params | [clovaai/aasist](https://github.com/clovaai/aasist) |
 | **VoiceGen** | Audio (from video) | Dual RawNet2 encoders with domain-agnostic feature disentanglement, SAM optimization, 59M params | [Purdue-M2/AI-Synthesized-Voice-Generalization](https://github.com/Purdue-M2/AI-Synthesized-Voice-Generalization) |
-| **UniversalFakeDetect** | Image | Frozen CLIP ViT-L/14 + linear probe (769 params), trained on ProGAN, generalizes to diffusion/autoregressive | [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
+| **UniversalFakeDetect** | Image + Video | Frozen CLIP ViT-L/14 + linear probe (769 params), 20-frame sampling for video, trained on ProGAN | [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
+| **GenD PE L** | Image + Video | Perception Encoder ViT-L (EVA, 300M params) + L2-normalized linear probe, 20-frame sampling for video | [yermandy/GenD_PE_L](https://huggingface.co/yermandy/GenD_PE_L) |
+| **Wav2Vec2 Voice Detector** | Audio (from video) | Fine-tuned Wav2Vec2-XLSR (300M params), trained on 6 modern TTS engines | [garystafford/wav2vec2-deepfake-voice-detector](https://huggingface.co/garystafford/wav2vec2-deepfake-voice-detector) |
 
 ## Quick Start
 
 ### Requirements
 
 - Python 3.11+
-- ~1.8GB disk for model weights (downloaded on first run)
+- ~3GB disk for model weights (downloaded on first run)
 
 ### Setup
 
@@ -110,6 +112,8 @@ deep-fake-detection/
 │       ├── gend_clip.py      # GenD CLIP ViT-L/14 video detector
 │       ├── d3_clip.py        # D3 dual-branch CLIP video detector
 │       ├── universal_fake_detect.py  # UniversalFakeDetect CLIP linear probe
+│       ├── gend_dino.py        # GenD Perception Encoder ViT-L detector
+│       ├── wav2vec_audio.py    # Wav2Vec2-XLSR audio deepfake detector
 │       ├── aasist/           # AASIST audio anti-spoofing detector
 │       └── voice_gen/        # VoiceGen dual-RawNet2 audio detector
 ├── cli.py                    # CLI tool
