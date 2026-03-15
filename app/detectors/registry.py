@@ -1,10 +1,10 @@
 import logging
 
+from app.detectors.audio_deepfake import AudioDeepfakeDetector
 from app.detectors.base import BaseDetector
-from app.detectors.efficientnet_video import EfficientNetVideoDetector
+from app.detectors.d3_clip import D3ClipDetector
 from app.detectors.frame_sampler import FrameSamplerDetector
 from app.detectors.gend_clip import GenDClipDetector
-from app.detectors.genconvit.detector import GenConViTDetector
 from app.detectors.hf_image import HFImageDetector
 
 logger = logging.getLogger(__name__)
@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 DETECTOR_REGISTRY: dict[str, type[BaseDetector]] = {
     "hf_image": HFImageDetector,
     "frame_sampler": FrameSamplerDetector,
-    "efficientnet_video": EfficientNetVideoDetector,
-    "genconvit": GenConViTDetector,
     "gend_clip": GenDClipDetector,
+    "d3_clip": D3ClipDetector,
+    "audio_deepfake": AudioDeepfakeDetector,
 }
 
 MEDIA_TYPE_TO_DETECTORS: dict[str, list[str]] = {
     "image": ["hf_image"],
-    "video": ["frame_sampler", "efficientnet_video", "genconvit", "gend_clip"],
+    "video": ["frame_sampler", "gend_clip", "d3_clip", "audio_deepfake"],
 }
 
 _loaded_detectors: dict[str, BaseDetector] = {}

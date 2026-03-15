@@ -18,27 +18,19 @@ Every detector implements `BaseDetector` (load, detect, supported_media_types) a
 
 ## Current Models
 
-### Image
-
-| Model | Architecture | Source |
-|-------|-------------|--------|
-| **ViT Deep-Fake Detector v2** | ViT-base (HuggingFace pipeline) | [prithivMLmods/Deep-Fake-Detector-v2-Model](https://huggingface.co/prithivMLmods/Deep-Fake-Detector-v2-Model) |
-| **Frame Sampler** | Samples 20 video frames → runs ViT image detector → averages | Uses the image model above |
-
-### Video
-
-| Model | Architecture | Source |
-|-------|-------------|--------|
-| **EfficientNet-B0** | EfficientNet-B0 with 2-class head, 20-frame averaging | [TRahulsingh/DeepfakeDetector](https://github.com/TRahulsingh/DeepfakeDetector) |
-| **GenConViT (ED+VAE)** | ConvNeXt + Swin Transformer hybrid with CNN autoencoder (ED) and VAE, face detection | [erprogs/GenConViT](https://github.com/erprogs/GenConViT) |
-| **GenD CLIP L/14** | CLIP ViT-L/14 vision encoder + linear probe, 20-frame averaging | [yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14) |
+| Model | Media | Architecture | Source |
+|-------|-------|-------------|--------|
+| **ViT Deep-Fake Detector v2** | Image | ViT-base (HuggingFace pipeline) | [prithivMLmods/Deep-Fake-Detector-v2-Model](https://huggingface.co/prithivMLmods/Deep-Fake-Detector-v2-Model) |
+| **Frame Sampler** | Video | Samples 20 video frames, runs ViT image detector on each, averages scores | Uses the image model above |
+| **GenD CLIP L/14** | Video | CLIP ViT-L/14 vision encoder + linear probe, 20-frame averaging | [yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14) |
+| **D3** | Video | Dual-branch CLIP ViT-L/14 (shuffled + original patches) + attention head, 20-frame averaging | [BigAandSmallq/D3](https://github.com/BigAandSmallq/D3) |
 
 ## Quick Start
 
 ### Requirements
 
 - Python 3.11+
-- ~3GB disk for model weights (downloaded on first run)
+- ~1.5GB disk for model weights (downloaded on first run)
 
 ### Setup
 
@@ -104,38 +96,24 @@ Environment variables:
 ```
 deep-fake-detection/
 ├── app/
-│   ├── main.py                    # FastAPI app, /detect and /health endpoints
-│   ├── config.py                  # Settings from env vars
-│   ├── schemas.py                 # Pydantic request/response models
+│   ├── main.py              # FastAPI app, /detect and /health endpoints
+│   ├── config.py             # Settings from env vars
+│   ├── schemas.py            # Pydantic request/response models
 │   └── detectors/
-│       ├── base.py                # BaseDetector abstract class
-│       ├── registry.py            # Detector registry and media type routing
-│       ├── hf_image.py            # ViT image detector (HuggingFace)
-│       ├── frame_sampler.py       # Video → frame sampling → image detector
-│       ├── efficientnet_video.py  # EfficientNet-B0 video detector
-│       ├── gend_clip.py           # GenD CLIP ViT-L/14 video detector
-│       └── genconvit/             # GenConViT (ED+VAE) video detector
-│           ├── detector.py
-│           ├── genconvit.py
-│           ├── genconvit_ed.py
-│           ├── genconvit_vae.py
-│           └── model_embedder.py
-├── cli.py                         # CLI tool
-├── benchmark.py                   # Model evaluation script
-├── media/                         # Test files (fake-*.mp4, real-*.mp4)
-├── models/                        # Auto-downloaded model weights
+│       ├── base.py           # BaseDetector abstract class
+│       ├── registry.py       # Detector registry and media type routing
+│       ├── hf_image.py       # ViT image detector (HuggingFace)
+│       ├── frame_sampler.py  # Video → frame sampling → image detector
+│       ├── gend_clip.py      # GenD CLIP ViT-L/14 video detector
+│       └── d3_clip.py        # D3 dual-branch CLIP video detector
+├── cli.py                    # CLI tool
+├── benchmark.py              # Model evaluation script
+├── media/                    # Test files (fake-*.mp4, real-*.mp4)
 ├── requirements.txt
 └── Dockerfile
 ```
 
 ## Models to Evaluate in the Future
-
-### D3 — Discrepancy-Guided Deepfake Detection
-
-Dual-branch architecture that feeds both the original and a distorted version of the image through a frozen CLIP ViT-L/14 backbone, using the discrepancy as a signal. Achieves +5.3% accuracy over prior SOTA on out-of-domain generators (86.7% OOD, 90.7% overall). Image-only (frame-level for video).
-
-- Repository: https://github.com/BigAandSmallq/D3
-- Paper: AAAI 2025
 
 ### TrueMedia ML Models
 
@@ -143,7 +121,7 @@ Collection of deepfake detectors from TrueMedia.org covering image, video, and a
 
 - **DistilDIRE** (image) — distilled diffusion-based detector, 3.2x faster than DIRE, handles GAN and diffusion outputs
 - **UniversalFakeDetectV2** (image) — CLIP-ViT feature spaces with nearest-neighbor/linear probing
-- **GenConViT** (video) — ConvNeXt + Swin Transformer hybrid (already integrated above)
+- **GenConViT** (video) — ConvNeXt + Swin Transformer hybrid with CNN autoencoder and VAE
 - **StyleFlow** (video) — style-latent flow anomaly detection with StyleGRU + supervised contrastive learning
 - **FTCN** (video) — temporal convolution network for long-term coherence detection
 - **Transcript Based Detector** (audio) — speech recognition + LLM analysis for factual coherence

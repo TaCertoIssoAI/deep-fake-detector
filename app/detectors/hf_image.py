@@ -22,6 +22,8 @@ class HFImageDetector(BaseDetector):
             token=settings.HF_TOKEN,
         )
 
+    LABEL_MAP = {"deepfake": "fake", "realism": "real"}
+
     def detect(self, file_path: str) -> list[DetectionResult]:
         start = time.perf_counter()
         outputs = self.pipe(file_path)
@@ -29,7 +31,7 @@ class HFImageDetector(BaseDetector):
 
         return [
             DetectionResult(
-                label=out["label"].lower(),
+                label=self.LABEL_MAP.get(out["label"].lower(), out["label"].lower()),
                 score=out["score"],
                 model_used=self.model_name,
                 media_type="image",

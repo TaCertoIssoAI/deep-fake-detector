@@ -1,9 +1,8 @@
-import os
-import tempfile
 import time
 from collections import defaultdict
 
 import cv2
+import numpy as np
 from PIL import Image
 
 from app.config import settings
@@ -14,37 +13,36 @@ from app.schemas import DetectionResult
 NUM_FRAMES = 20
 
 
-def _extract_frame_images(video_path: str, num_frames: int = NUM_FRAMES) -> list[str]:
-    """Extract evenly spaced frames from video and save as temp images."""
+def _extract_frames(video_path: str, num_frames: int = NUM_FRAMES) -> list[Image.Image]:
     cap = cv2.VideoCapture(video_path)
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    interval = max(1, total_frames // num_frames)
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if total <= 0:
+        cap.release()
+        return []
 
-    paths = []
-    count = 0
-    success = True
+    indexes = set(np.linspace(0, total - 1, num=num_frames, dtype=int))
+    frames = []
 
-    while success and len(paths) < num_frames:
-        success, frame = cap.read()
-        if success and count % interval == 0:
+    for i in range(total):
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if i in indexes:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            img = Image.fromarray(frame_rgb)
-            tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            img.save(tmp.name)
-            tmp.close()
-            paths.append(tmp.name)
-        count += 1
+            frames.append(Image.fromarray(frame_rgb))
 
     cap.release()
-    return paths
+    return frames
 
 
 class FrameSamplerDetector(BaseDetector):
-    """Samples frames from video and runs the image detector on each, then averages."""
+    """Samples video frames and runs the ViT image detector on each, averaging scores."""
+
+    MODEL_NAME = f"frame_sampler({settings.IMAGE_MODEL})"
 
     def __init__(self):
+        self.model_name = self.MODEL_NAME
         self.image_detector = HFImageDetector()
-        self.model_name = f"{settings.IMAGE_MODEL} (frame-sampling)"
 
     def load(self) -> None:
         self.image_detector.load()
@@ -52,35 +50,30 @@ class FrameSamplerDetector(BaseDetector):
     def detect(self, file_path: str) -> list[DetectionResult]:
         start = time.perf_counter()
 
-        frame_paths = _extract_frame_images(file_path)
-        if not frame_paths:
+        frames = _extract_frames(file_path)
+        if not frames:
             raise RuntimeError("Could not extract any frames from video")
 
-        # Run image detector on each frame and accumulate scores per label
-        score_sums: dict[str, float] = defaultdict(float)
-        num_frames = len(frame_paths)
-
-        try:
-            for path in frame_paths:
-                results = self.image_detector.detect(path)
-                for r in results:
-                    score_sums[r.label] += r.score
-        finally:
-            for path in frame_paths:
-                os.unlink(path)
+        label_map = {"deepfake": "fake", "realism": "real"}
+        scores = defaultdict(list)
+        for frame in frames:
+            results = self.image_detector.pipe(frame)
+            for r in results:
+                label = r["label"].lower()
+                label = label_map.get(label, label)
+                scores[label].append(r["score"])
 
         elapsed_ms = (time.perf_counter() - start) * 1000
 
-        # Average scores across frames
         return [
             DetectionResult(
                 label=label,
-                score=round(total / num_frames, 4),
+                score=round(sum(s) / len(s), 4),
                 model_used=self.model_name,
                 media_type="video",
                 processing_time_ms=round(elapsed_ms, 2),
             )
-            for label, total in sorted(score_sums.items(), key=lambda x: -x[1])
+            for label, s in scores.items()
         ]
 
     def supported_media_types(self) -> list[str]:

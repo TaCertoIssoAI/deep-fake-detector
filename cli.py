@@ -44,6 +44,16 @@ def main():
     server_proc = None
 
     if not args.no_server:
+        # Check if server is already running
+        try:
+            r = requests.get(f"{base_url}/health", timeout=2)
+            if r.status_code == 200 and r.json().get("status") == "ok":
+                print("Server already running.")
+                args.no_server = True
+        except requests.ConnectionError:
+            pass
+
+    if not args.no_server:
         print("Starting server...")
         server_proc = subprocess.Popen(
             [

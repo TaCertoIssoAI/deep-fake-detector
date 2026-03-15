@@ -40,26 +40,34 @@ def main():
         sys.exit(1)
 
     print(f"Found {len(files)} files in media/")
-    print("Starting server...")
 
-    server_proc = subprocess.Popen(
-        [
-            sys.executable, "-m", "uvicorn",
-            "app.main:app",
-            "--host", HOST,
-            "--port", str(PORT),
-        ],
-        cwd=os.path.dirname(os.path.abspath(__file__)),
-        stdout=subprocess.PIPE,
-        stderr=sys.stderr,
-    )
+    server_proc = None
 
-    if not wait_for_server():
-        print("Error: server failed to start", file=sys.stderr)
-        server_proc.terminate()
-        sys.exit(1)
+    # Check if server is already running
+    try:
+        r = requests.get(f"{BASE_URL}/health", timeout=2)
+        if r.status_code == 200 and r.json().get("status") == "ok":
+            print("Server already running.\n")
+    except requests.ConnectionError:
+        print("Starting server...")
+        server_proc = subprocess.Popen(
+            [
+                sys.executable, "-m", "uvicorn",
+                "app.main:app",
+                "--host", HOST,
+                "--port", str(PORT),
+            ],
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+            stdout=subprocess.PIPE,
+            stderr=sys.stderr,
+        )
 
-    print("Server ready.\n")
+        if not wait_for_server():
+            print("Error: server failed to start", file=sys.stderr)
+            server_proc.terminate()
+            sys.exit(1)
+
+        print("Server ready.\n")
 
     rows = []
 
@@ -112,8 +120,9 @@ def main():
             print()
 
     finally:
-        server_proc.terminate()
-        server_proc.wait()
+        if server_proc:
+            server_proc.terminate()
+            server_proc.wait()
 
     # Write CSV
     with open(OUTPUT_CSV, "w", newline="") as f:
