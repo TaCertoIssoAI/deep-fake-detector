@@ -1,6 +1,6 @@
 # Deep-Fake Detection Service
 
-A Python FastAPI server with a pluggable detector abstraction layer for deepfake detection. Supports multiple models running in parallel across image and video media types.
+A Python FastAPI server with a pluggable detector abstraction layer for deepfake detection. Supports multiple models running in parallel across image, video, and audio media types.
 
 ## Architecture
 
@@ -24,13 +24,16 @@ Every detector implements `BaseDetector` (load, detect, supported_media_types) a
 | **Frame Sampler** | Video | Samples 20 video frames, runs ViT image detector on each, averages scores | Uses the image model above |
 | **GenD CLIP L/14** | Video | CLIP ViT-L/14 vision encoder + linear probe, 20-frame averaging | [yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14) |
 | **D3** | Video | Dual-branch CLIP ViT-L/14 (shuffled + original patches) + attention head, 20-frame averaging | [BigAandSmallq/D3](https://github.com/BigAandSmallq/D3) |
+| **AASIST** | Audio (from video) | Graph Attention Network with SincConv frontend, raw waveform input, 297K params | [clovaai/aasist](https://github.com/clovaai/aasist) |
+| **VoiceGen** | Audio (from video) | Dual RawNet2 encoders with domain-agnostic feature disentanglement, SAM optimization, 59M params | [Purdue-M2/AI-Synthesized-Voice-Generalization](https://github.com/Purdue-M2/AI-Synthesized-Voice-Generalization) |
+| **UniversalFakeDetect** | Image | Frozen CLIP ViT-L/14 + linear probe (769 params), trained on ProGAN, generalizes to diffusion/autoregressive | [WisconsinAIVision/UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
 
 ## Quick Start
 
 ### Requirements
 
 - Python 3.11+
-- ~1.5GB disk for model weights (downloaded on first run)
+- ~1.8GB disk for model weights (downloaded on first run)
 
 ### Setup
 
@@ -105,7 +108,10 @@ deep-fake-detection/
 │       ├── hf_image.py       # ViT image detector (HuggingFace)
 │       ├── frame_sampler.py  # Video → frame sampling → image detector
 │       ├── gend_clip.py      # GenD CLIP ViT-L/14 video detector
-│       └── d3_clip.py        # D3 dual-branch CLIP video detector
+│       ├── d3_clip.py        # D3 dual-branch CLIP video detector
+│       ├── universal_fake_detect.py  # UniversalFakeDetect CLIP linear probe
+│       ├── aasist/           # AASIST audio anti-spoofing detector
+│       └── voice_gen/        # VoiceGen dual-RawNet2 audio detector
 ├── cli.py                    # CLI tool
 ├── benchmark.py              # Model evaluation script
 ├── media/                    # Test files (fake-*.mp4, real-*.mp4)
@@ -129,3 +135,22 @@ Collection of deepfake detectors from TrueMedia.org covering image, video, and a
 Repository: https://github.com/truemediaorg/ml-models
 
 > **Note:** TrueMedia model weights require a formal request to `aerin@truemedia.org` with affiliation and intended use.
+
+### GenFace / CAEL
+
+- **CAEL** (image) — Cross-modal Appearance-Edge Learning transformer with multi-grained fusion, 158.63M params, 99.88% within-dataset ACC but 65.04% cross-dataset AUC
+- Dataset: GenFace (515K forged + 100K real faces covering GANs and diffusion methods)
+- Repository: https://github.com/Jenine-321/GenFace
+- Skipped for now: redundant with existing ViT image detector, weak cross-dataset generalization
+
+### Other Evaluated Models
+
+- **WaveSpect** (audio) — hybrid waveform + CQT spectrogram analysis for synthetic audio detection. No public weights or code available yet.
+- **FakeBrAccent / XGBoost** (audio) — XGBoost/CNN on Brazilian-accented speech dataset. Too narrow (Portuguese-only, accent-specific) for general use.
+- **BRSpeech-DF** (audio) — Brazilian Portuguese deepfake speech dataset. Could be used to fine-tune AASIST but no pretrained weights provided.
+- **SDD-APALLM** (audio) — CQT spectrograms + LLM prompting. Interesting but no released code/weights.
+- **F-SAT / DeepFakeVox-HQ** (audio) — frequency-selective adversarial training for robustness. Code and dataset forthcoming.
+- **deitfake-v2** (image) — DeiT-based image classifier on HuggingFace. Only 2 classes, redundant with existing ViT detector.
+- **DFD-FCG** (video) — frequency-aware CLIP with graph learning. Uses same CLIP ViT-L/14 backbone as GenD/D3; weights not publicly available.
+- **FakeVLM** (video/image) — vision-language model for explainable deepfake detection, 7B+ params. Too heavy for real-time pipeline.
+- **DTAD** (video) — temporal artifact detection. Code available but limited documentation and unclear weight availability.

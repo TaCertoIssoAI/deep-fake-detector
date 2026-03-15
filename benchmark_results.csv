@@ -1,50 +1,67 @@
 model,file,fake_score,real_score,prediction,actual,correct
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-1.mp4,0.8974,0.1026,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-hf-1.mp4,0.6493,0.3507,fake,fake,True
-D3 (CLIP ViT-L/14),fake-hf-1.mp4,0.4623,0.5377,real,fake,False
-mo-thecreator/Deepfake-audio-detection,fake-hf-1.mp4,0.9947,0.0053,fake,fake,True
+D3 (CLIP ViT-L/14),fake-hf-1.mp4,0.4631,0.5369,real,fake,False
+AASIST,fake-hf-1.mp4,0.0079,0.9921,real,fake,False
+VoiceGen (Dual-RawNet2),fake-hf-1.mp4,0.0001,0.9999,real,fake,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-2.mp4,0.6139,0.3861,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-hf-2.mp4,0.6442,0.3558,fake,fake,True
-D3 (CLIP ViT-L/14),fake-hf-2.mp4,0.0243,0.9757,real,fake,False
-mo-thecreator/Deepfake-audio-detection,fake-hf-2.mp4,0.0066,0.9934,real,fake,False
+D3 (CLIP ViT-L/14),fake-hf-2.mp4,0.0382,0.9618,real,fake,False
+AASIST,fake-hf-2.mp4,0.0076,0.9924,real,fake,False
+VoiceGen (Dual-RawNet2),fake-hf-2.mp4,1.0,0.0,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-4.mov,0.7609,0.2391,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-hf-4.mov,0.743,0.257,fake,fake,True
-D3 (CLIP ViT-L/14),fake-hf-4.mov,0.0015,0.9985,real,fake,False
-mo-thecreator/Deepfake-audio-detection,fake-hf-4.mov,0.9994,0.0006,fake,fake,True
+D3 (CLIP ViT-L/14),fake-hf-4.mov,0.0016,0.9984,real,fake,False
+AASIST,fake-hf-4.mov,0.1657,0.8343,real,fake,False
+VoiceGen (Dual-RawNet2),fake-hf-4.mov,0.546,0.454,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-5.mp4,0.4993,0.5007,real,fake,False
 yermandy/GenD_CLIP_L_14,fake-hf-5.mp4,0.386,0.614,real,fake,False
-D3 (CLIP ViT-L/14),fake-hf-5.mp4,0.1602,0.8398,real,fake,False
-mo-thecreator/Deepfake-audio-detection,fake-hf-5.mp4,1.0,0.0,fake,fake,True
+D3 (CLIP ViT-L/14),fake-hf-5.mp4,0.1324,0.8676,real,fake,False
+AASIST,fake-hf-5.mp4,0.3401,0.6599,real,fake,False
+VoiceGen (Dual-RawNet2),fake-hf-5.mp4,1.0,0.0,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-our.mp4,0.6046,0.3954,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-our.mp4,0.5839,0.4161,fake,fake,True
-D3 (CLIP ViT-L/14),fake-our.mp4,0.9962,0.0038,fake,fake,True
-mo-thecreator/Deepfake-audio-detection,fake-our.mp4,1.0,0.0,fake,fake,True
+D3 (CLIP ViT-L/14),fake-our.mp4,0.9958,0.0042,fake,fake,True
+AASIST,fake-our.mp4,0.9997,0.0003,fake,fake,True
+VoiceGen (Dual-RawNet2),fake-our.mp4,1.0,0.0,fake,fake,True
 prithivMLmods/Deep-Fake-Detector-v2-Model,fake-our.png,0.8157,0.1843,fake,fake,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-2.mp4,0.8424,0.1576,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-ours-2.mp4,0.2864,0.7136,real,fake,False
-D3 (CLIP ViT-L/14),fake-ours-2.mp4,0.9865,0.0135,fake,fake,True
-mo-thecreator/Deepfake-audio-detection,fake-ours-2.mp4,0.0,1.0,real,fake,False
+D3 (CLIP ViT-L/14),fake-ours-2.mp4,0.9888,0.0112,fake,fake,True
+AASIST,fake-ours-2.mp4,0.0004,0.9996,real,fake,False
+VoiceGen (Dual-RawNet2),fake-ours-2.mp4,0.0052,0.9948,real,fake,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-3.mp4,0.8805,0.1195,fake,fake,True
 yermandy/GenD_CLIP_L_14,fake-ours-3.mp4,0.0802,0.9198,real,fake,False
-D3 (CLIP ViT-L/14),fake-ours-3.mp4,0.0039,0.9961,real,fake,False
-mo-thecreator/Deepfake-audio-detection,fake-ours-3.mp4,1.0,0.0,fake,fake,True
+D3 (CLIP ViT-L/14),fake-ours-3.mp4,0.0083,0.9917,real,fake,False
+AASIST,fake-ours-3.mp4,0.9999,0.0001,fake,fake,True
+VoiceGen (Dual-RawNet2),fake-ours-3.mp4,0.9998,0.0002,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-4.mp4,0.8901,0.1099,fake,fake,True
+yermandy/GenD_CLIP_L_14,fake-ours-4.mp4,0.0362,0.9638,real,fake,False
+D3 (CLIP ViT-L/14),fake-ours-4.mp4,0.1118,0.8882,real,fake,False
+AASIST,fake-ours-4.mp4,0.3342,0.6658,real,fake,False
+VoiceGen (Dual-RawNet2),fake-ours-4.mp4,0.0704,0.9296,real,fake,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-1.mp4,0.8972,0.1028,fake,real,False
 yermandy/GenD_CLIP_L_14,real-hf-1.mp4,0.1543,0.8457,real,real,True
-D3 (CLIP ViT-L/14),real-hf-1.mp4,0.021,0.979,real,real,True
-mo-thecreator/Deepfake-audio-detection,real-hf-1.mp4,0.9976,0.0024,fake,real,False
+D3 (CLIP ViT-L/14),real-hf-1.mp4,0.0104,0.9896,real,real,True
+AASIST,real-hf-1.mp4,0.007,0.993,real,real,True
+VoiceGen (Dual-RawNet2),real-hf-1.mp4,0.0001,0.9999,real,real,True
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-2.mp4,0.5999,0.4001,fake,real,False
 yermandy/GenD_CLIP_L_14,real-hf-2.mp4,0.158,0.842,real,real,True
-D3 (CLIP ViT-L/14),real-hf-2.mp4,0.4635,0.5365,real,real,True
-mo-thecreator/Deepfake-audio-detection,real-hf-2.mp4,0.0252,0.9748,real,real,True
+D3 (CLIP ViT-L/14),real-hf-2.mp4,0.4979,0.5021,real,real,True
+AASIST,real-hf-2.mp4,0.008,0.992,real,real,True
+VoiceGen (Dual-RawNet2),real-hf-2.mp4,1.0,0.0,fake,real,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-3.mp4,0.6917,0.3083,fake,real,False
 yermandy/GenD_CLIP_L_14,real-hf-3.mp4,0.4208,0.5792,real,real,True
-D3 (CLIP ViT-L/14),real-hf-3.mp4,0.8445,0.1555,fake,real,False
-mo-thecreator/Deepfake-audio-detection,real-hf-3.mp4,0.0003,0.9997,real,real,True
+D3 (CLIP ViT-L/14),real-hf-3.mp4,0.8446,0.1554,fake,real,False
+AASIST,real-hf-3.mp4,0.0237,0.9763,real,real,True
+VoiceGen (Dual-RawNet2),real-hf-3.mp4,0.9987,0.0013,fake,real,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-4.mp4,0.4513,0.5487,real,real,True
 yermandy/GenD_CLIP_L_14,real-hf-4.mp4,0.2537,0.7463,real,real,True
-D3 (CLIP ViT-L/14),real-hf-4.mp4,0.5098,0.4902,fake,real,False
-mo-thecreator/Deepfake-audio-detection,real-hf-4.mp4,1.0,0.0,fake,real,False
+D3 (CLIP ViT-L/14),real-hf-4.mp4,0.5252,0.4748,fake,real,False
+AASIST,real-hf-4.mp4,0.518,0.482,fake,real,False
+VoiceGen (Dual-RawNet2),real-hf-4.mp4,0.9998,0.0002,fake,real,False
 frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-5.MOV,0.475,0.525,real,real,True
 yermandy/GenD_CLIP_L_14,real-hf-5.MOV,0.2058,0.7942,real,real,True
-D3 (CLIP ViT-L/14),real-hf-5.MOV,0.0025,0.9975,real,real,True
-mo-thecreator/Deepfake-audio-detection,real-hf-5.MOV,0.9999,0.0001,fake,real,False
+D3 (CLIP ViT-L/14),real-hf-5.MOV,0.0022,0.9978,real,real,True
+AASIST,real-hf-5.MOV,0.1455,0.8545,real,real,True
+VoiceGen (Dual-RawNet2),real-hf-5.MOV,0.4715,0.5285,real,real,True

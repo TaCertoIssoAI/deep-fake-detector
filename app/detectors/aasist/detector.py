@@ -2,18 +2,39 @@ import os
 import subprocess
 import tempfile
 import time
+import urllib.request
 
 import numpy as np
 import soundfile as sf
 import torch
-from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2ForSequenceClassification
 
-from app.config import settings
+from app.detectors.aasist.model import AASIST
 from app.detectors.base import BaseDetector
 from app.schemas import DetectionResult
 
-REPO_ID = "mo-thecreator/Deepfake-audio-detection"
 SAMPLE_RATE = 16000
+NB_SAMP = 64600  # ~4.04 seconds at 16kHz
+
+WEIGHTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "models", "aasist")
+WEIGHTS_URL = "https://github.com/clovaai/aasist/raw/main/models/weights/AASIST.pth"
+WEIGHTS_PATH = os.path.join(WEIGHTS_DIR, "AASIST.pth")
+
+AASIST_CONFIG = {
+    "first_conv": 128,
+    "filts": [70, [1, 32], [32, 32], [32, 64], [64, 64]],
+    "gat_dims": [64, 32],
+    "pool_ratios": [0.5, 0.7, 0.5, 0.5],
+    "temperatures": [2.0, 2.0, 100.0, 100.0],
+}
+
+
+def _download_weights() -> str:
+    if os.path.isfile(WEIGHTS_PATH):
+        return WEIGHTS_PATH
+    os.makedirs(os.path.dirname(WEIGHTS_PATH), exist_ok=True)
+    print(f"Downloading AASIST weights to {WEIGHTS_PATH}...")
+    urllib.request.urlretrieve(WEIGHTS_URL, WEIGHTS_PATH)
+    return WEIGHTS_PATH
 
 
 def _extract_audio(video_path: str) -> str | None:
@@ -35,7 +56,6 @@ def _extract_audio(video_path: str) -> str | None:
         if result.returncode != 0:
             os.unlink(tmp.name)
             return None
-        # Check file has actual audio data
         if os.path.getsize(tmp.name) < 1000:
             os.unlink(tmp.name)
             return None
@@ -46,19 +66,39 @@ def _extract_audio(video_path: str) -> str | None:
         return None
 
 
-class AudioDeepfakeDetector(BaseDetector):
-    """Wav2Vec2-based deepfake audio detector. Extracts audio from video and classifies it."""
+def _load_audio(audio_path: str) -> np.ndarray:
+    """Load audio and pad/truncate to NB_SAMP."""
+    audio, sr = sf.read(audio_path)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    audio = audio.astype(np.float32)
 
-    MODEL_NAME = "mo-thecreator/Deepfake-audio-detection"
+    # Pad or truncate to fixed length
+    if len(audio) < NB_SAMP:
+        # Wrap-pad (repeat audio to fill)
+        repeats = NB_SAMP // len(audio) + 1
+        audio = np.tile(audio, repeats)[:NB_SAMP]
+    else:
+        audio = audio[:NB_SAMP]
+
+    return audio
+
+
+class AasistDetector(BaseDetector):
+    """AASIST: Audio Anti-Spoofing using Integrated Spectro-Temporal Graph Attention Networks."""
+
+    MODEL_NAME = "AASIST"
 
     def __init__(self):
         self.model_name = self.MODEL_NAME
         self.model = None
-        self.feature_extractor = None
 
     def load(self) -> None:
-        self.feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(REPO_ID)
-        self.model = Wav2Vec2ForSequenceClassification.from_pretrained(REPO_ID)
+        weights_path = _download_weights()
+        self.model = AASIST(AASIST_CONFIG)
+        self.model.load_state_dict(
+            torch.load(weights_path, map_location="cpu", weights_only=True)
+        )
         self.model.eval()
 
     def detect(self, file_path: str) -> list[DetectionResult]:
@@ -66,31 +106,23 @@ class AudioDeepfakeDetector(BaseDetector):
 
         audio_path = _extract_audio(file_path)
         if audio_path is None:
-            # No audio track — skip silently
             return []
 
         try:
-            audio, sr = sf.read(audio_path)
-            # Ensure mono
-            if audio.ndim > 1:
-                audio = audio.mean(axis=1)
-            audio = audio.astype(np.float32)
+            audio = _load_audio(audio_path)
         finally:
             os.unlink(audio_path)
 
         if len(audio) < SAMPLE_RATE * 0.5:
-            # Less than 0.5s of audio — too short for meaningful detection
             return []
 
-        inputs = self.feature_extractor(
-            audio, sampling_rate=SAMPLE_RATE, return_tensors="pt", padding=True
-        )
+        tensor = torch.tensor(audio).unsqueeze(0)
 
         with torch.no_grad():
-            logits = self.model(**inputs).logits
-            probs = torch.softmax(logits, dim=-1)[0]
+            output = self.model(tensor)
+            probs = torch.softmax(output, dim=-1)[0]
 
-        # id2label: 0 -> fake, 1 -> real
+        # AASIST: class 0 = spoof (fake), class 1 = bonafide (real)
         fake_score = float(probs[0])
         real_score = float(probs[1])
 
