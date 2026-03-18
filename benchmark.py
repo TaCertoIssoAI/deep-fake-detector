@@ -12,9 +12,16 @@ import aiohttp
 
 MEDIA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "media")
 OUTPUT_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark_results.csv")
-HOST = "127.0.0.1"
-PORT = 8000
-BASE_URL = f"http://{HOST}:{PORT}"
+_HOST_ENV = os.environ.get("HOST", "")
+PORT = int(os.environ.get("PORT", "8000"))
+if os.environ.get("URL"):
+    BASE_URL = os.environ["URL"].rstrip("/")
+elif _HOST_ENV.startswith("http://") or _HOST_ENV.startswith("https://"):
+    BASE_URL = _HOST_ENV.rstrip("/")
+elif _HOST_ENV:
+    BASE_URL = f"http://{_HOST_ENV}:{PORT}"
+else:
+    BASE_URL = f"http://127.0.0.1:{PORT}"
 MAX_CONCURRENT = 4
 
 
@@ -114,33 +121,41 @@ async def run_benchmark():
     print(f"Found {len(files)} files in media/")
 
     server_proc = None
+    use_remote = os.environ.get("URL") is not None or os.environ.get("HOST") is not None
 
-    # Check if server is already running
-    try:
-        import requests
-        r = requests.get(f"{BASE_URL}/health", timeout=2)
-        if r.status == 200 or r.status_code == 200:
-            print("Server already running.\n")
-    except Exception:
-        print("Starting server...")
-        server_proc = subprocess.Popen(
-            [
-                sys.executable, "-m", "uvicorn",
-                "app.main:app",
-                "--host", HOST,
-                "--port", str(PORT),
-            ],
-            cwd=os.path.dirname(os.path.abspath(__file__)),
-            stdout=subprocess.PIPE,
-            stderr=sys.stderr,
-        )
+    if use_remote:
+        print(f"Using remote server: {BASE_URL}\n")
+    else:
+        # Check if server is already running
+        try:
+            import requests
+            r = requests.get(f"{BASE_URL}/health", timeout=2)
+            if r.status_code == 200:
+                print("Server already running.\n")
+                use_remote = True
+        except Exception:
+            pass
 
-        if not await wait_for_server():
-            print("Error: server failed to start", file=sys.stderr)
-            server_proc.terminate()
-            sys.exit(1)
+        if not use_remote:
+            print("Starting server...")
+            server_proc = subprocess.Popen(
+                [
+                    sys.executable, "-m", "uvicorn",
+                    "app.main:app",
+                    "--host", "127.0.0.1",
+                    "--port", str(PORT),
+                ],
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                stdout=subprocess.PIPE,
+                stderr=sys.stderr,
+            )
 
-        print("Server ready.\n")
+            if not await wait_for_server():
+                print("Error: server failed to start", file=sys.stderr)
+                server_proc.terminate()
+                sys.exit(1)
+
+            print("Server ready.\n")
 
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
     all_rows = []

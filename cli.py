@@ -10,8 +10,8 @@ import time
 
 import requests
 
-DEFAULT_HOST = "127.0.0.1"
-DEFAULT_PORT = 8000
+DEFAULT_HOST = os.environ.get("HOST", "")
+DEFAULT_PORT = int(os.environ.get("PORT", "8000"))
 
 
 def wait_for_server(base_url: str, timeout: float = 300) -> bool:
@@ -40,7 +40,21 @@ def main():
         print(f"Error: file not found: {args.file}", file=sys.stderr)
         sys.exit(1)
 
-    base_url = f"http://{args.host}:{args.port}"
+    # URL or HOST env var overrides and skips local server startup
+    env_url = os.environ.get("URL")
+    host_env = os.environ.get("HOST", "")
+    if env_url:
+        base_url = env_url.rstrip("/")
+        args.no_server = True
+    elif host_env.startswith("http://") or host_env.startswith("https://"):
+        base_url = host_env.rstrip("/")
+        args.no_server = True
+    elif host_env:
+        base_url = f"http://{host_env}:{args.port}"
+        args.no_server = True
+    else:
+        base_url = f"http://127.0.0.1:{args.port}"
+
     server_proc = None
 
     if not args.no_server:
@@ -59,7 +73,7 @@ def main():
             [
                 sys.executable, "-m", "uvicorn",
                 "app.main:app",
-                "--host", args.host,
+                "--host", "127.0.0.1",
                 "--port", str(args.port),
             ],
             cwd=os.path.dirname(os.path.abspath(__file__)),
