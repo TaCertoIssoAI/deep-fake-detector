@@ -1,0 +1,15 @@
+venv/
+models/
+media/
+.git/
+.gitignore
+.mypy_cache/
+__pycache__/
+*.pyc
+.env
+benchmark.py
+benchmark_results.csv
+cli.py
+fetch_model_info.py
+LICENSE
+README.md
