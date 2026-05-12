@@ -1,30 +1,30 @@
 model,file,fake_score,real_score,prediction,actual,correct
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-1.mp4,0.8974,0.1026,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-1.mp4,0.8989,0.1011,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-hf-1.mp4,0.0001,0.9999,real,fake,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-2.mp4,0.6139,0.3861,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-2.mp4,0.6123,0.3877,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-hf-2.mp4,1.0,0.0,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-4.mov,0.7609,0.2391,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-4.mov,0.7687,0.2313,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-hf-4.mov,0.546,0.454,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-5.mp4,0.4993,0.5007,real,fake,False
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-hf-5.mp4,0.4734,0.5266,real,fake,False
 VoiceGen (Dual-RawNet2),fake-hf-5.mp4,1.0,0.0,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-our.mp4,0.6046,0.3954,fake,fake,True
-VoiceGen (Dual-RawNet2),fake-our.mp4,1.0,0.0,fake,fake,True 
-prithivMLmods/Deep-Fake-Detector-v2-Model,fake-our.png,0.8157,0.1843,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-2.mp4,0.8424,0.1576,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-our.mp4,0.6041,0.3959,fake,fake,True
+VoiceGen (Dual-RawNet2),fake-our.mp4,1.0,0.0,fake,fake,True
+prithivMLmods/Deep-Fake-Detector-v2-Model,fake-our.png,0.8148,0.1852,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-2.mp4,0.8392,0.1608,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-ours-2.mp4,0.0052,0.9948,real,fake,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-3.mp4,0.8805,0.1195,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-3.mp4,0.8844,0.1156,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-ours-3.mp4,0.9998,0.0002,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-4.mp4,0.8901,0.1099,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-4.mp4,0.8909,0.1091,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-ours-4.mp4,0.0704,0.9296,real,fake,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-5.mp4,0.8695,0.1305,fake,fake,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),fake-ours-5.mp4,0.8762,0.1238,fake,fake,True
 VoiceGen (Dual-RawNet2),fake-ours-5.mp4,0.9936,0.0064,fake,fake,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-1.mp4,0.8972,0.1028,fake,real,False
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-1.mp4,0.8995,0.1005,fake,real,False
 VoiceGen (Dual-RawNet2),real-hf-1.mp4,0.0001,0.9999,real,real,True
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-2.mp4,0.5999,0.4001,fake,real,False
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-2.mp4,0.6055,0.3945,fake,real,False
 VoiceGen (Dual-RawNet2),real-hf-2.mp4,1.0,0.0,fake,real,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-3.mp4,0.6917,0.3083,fake,real,False
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-3.mp4,0.715,0.285,fake,real,False
 VoiceGen (Dual-RawNet2),real-hf-3.mp4,0.9987,0.0013,fake,real,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-4.mp4,0.4513,0.5487,real,real,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-4.mp4,0.3914,0.6086,real,real,True
 VoiceGen (Dual-RawNet2),real-hf-4.mp4,0.9998,0.0002,fake,real,False
-frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-5.MOV,0.475,0.525,real,real,True
+frame_sampler(prithivMLmods/Deep-Fake-Detector-v2-Model),real-hf-5.MOV,0.4825,0.5175,real,real,True
 VoiceGen (Dual-RawNet2),real-hf-5.MOV,0.4715,0.5285,real,real,True
