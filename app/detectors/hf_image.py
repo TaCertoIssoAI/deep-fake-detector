@@ -1,5 +1,6 @@
 import time
 
+import torch
 from transformers import pipeline
 
 from app.config import settings
@@ -20,6 +21,7 @@ class HFImageDetector(BaseDetector):
             model=self.model_name,
             device=settings.DEVICE,
             token=settings.HF_TOKEN,
+            torch_dtype=torch.float16,
         )
 
     LABEL_MAP = {"deepfake": "fake", "realism": "real"}

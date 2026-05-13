@@ -158,6 +158,7 @@ class VoiceGenDetector(BaseDetector):
             if critical_missing:
                 raise RuntimeError(f"Missing critical keys: {critical_missing}")
 
+        self.model.half()
         self.model.eval()
 
     def detect(self, file_path: str) -> list[DetectionResult]:
@@ -175,7 +176,7 @@ class VoiceGenDetector(BaseDetector):
         if len(audio) < SAMPLE_RATE * 0.5:
             return []
 
-        tensor = torch.tensor(audio).unsqueeze(0)
+        tensor = torch.tensor(audio, dtype=torch.float16).unsqueeze(0)
 
         with torch.no_grad():
             logits = self.model(tensor)
